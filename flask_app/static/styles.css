@@ -1,0 +1,112 @@
+p, h1 {
+    color: #CCC;
+}
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+    margin-left: auto;
+    margin-right: auto;
+}
+.navbar {
+    background-color: #353535;
+}
+/* Colors for brand */
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+nav .navbar-brand .yellow
+{
+    color: #f5b82e;
+}
+.btn-primary {
+    background-color: #ea433b; /* Your custom color */
+    color: white; /* Optional: Ensure the text is readable */
+    border-color: #434343;
+}
+.btn-primary:hover {
+    border: solid 2px;
+    background-color: #000000; /* Optional: Slightly darker on hover */
+    border-color: #434343;
+}
+.form-control
+{
+    border-color: #ea433b;
+    border: solid 2px;
+}
+.form-control:focus {
+    border-color: #ea433b;
+    border: solid 2px;
+    box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.5);
+}
+.form-control:hover {
+    border-color: #ea433b;
+    border: solid 2px;
+}
+/* Estilos gerais */
+/* Gráfico de linha */
+.chart-container {
+    transition: none !important;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    height: auto;
+}
+/* Botões em baixo de gráfico de linha */
+.button-container {
+    transition: none !important;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    height: auto;
+}
+/* Gráfico de pizza */
+#myPlot {
+    width: 100%;
+    max-width: 600px;
+}
+/* Botões responsivos */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+.btn {
+    color: rgb(75, 192, 192);
+    background-color: transparent;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: rgb(75, 192, 192);
+    color: white;
+}
+/* Responsividade */
+@media (max-width: 768px) {
+    .chart-container, #myPlot {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .button-container {
+        justify-content: center;
+    }
+}
+/* Tabela responsiva */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+.graph_line {
+    display: flex;
+    justify-content: left;
+}
+th, td {
+    color: #CCC;
+    text-align: left;
+}

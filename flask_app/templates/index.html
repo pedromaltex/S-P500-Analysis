@@ -1,0 +1,181 @@
+{% extends "layout.html" %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+{% block title %}
+Portfolio
+{% endblock %}
+
+{% block main %}
+
+
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; height:50vh; min-height:400px;">
+
+    <div class="chart-container" style="position: relative; height:40vh; width:49%">
+        <canvas id= "lineChart" width="700" height="400"></canvas>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+
+
+
+                    var ctx = document.getElementById("lineChart").getContext("2d");
+
+                    var lineChart = new Chart(ctx, {
+                        type: "line",
+
+                        data: {
+                            labels: {{ labels | safe }},
+                            datasets: [{
+                                label: "S&P500",
+                                data: {{ values | safe }},
+                                fill: false,
+                                borderColor: "rgb(75, 192, 192)",
+                                backgroundColor: "#353535",
+                                pointRadius: 0, // Aumenta os pontos para melhor visualização da tooltip
+                                lineTension: 0.4,
+                            }]
+                        },
+
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            spanGaps: true,
+                            hover: {
+                                mode: 'index',
+                                intersect: false, // Permite hover ao longo do eixo X
+                            },
+                        }
+                    });
+                });
+            </script>
+            <div class="button-container" id="myButtons" style="width: 100%;">
+                <script>
+                    // Função para meter os botões a funcionar
+
+                    function toggleButton(button) {
+                        button.classList.toggle('selected');
+                        // Coleta todas as opções selecionadas
+                        let selectedButtons = document.querySelectorAll('.selected');
+                        let formData = [];
+                        selectedButtons.forEach(btn => {
+                            formData.push(btn.value);
+                        });
+
+                        // Atualiza o campo oculto com as opções selecionadas
+                        document.getElementById('selecao').value = formData.join(',');
+
+                        // Submete o formulário imediatamente
+                        document.getElementById('form').submit();
+                    }
+                </script>
+                <form id="form" method="POST" style="height: 100%;">
+                    <button class="btn" value="1d"  id="1d"  type="button" onclick="toggleButton(this)">1d</button>
+                    <button class="btn" value="1wk"  id="1w"  type="button" onclick="toggleButton(this)">1w</button>
+                    <button class="btn" value="1mo"  id="1m"  type="button" onclick="toggleButton(this)">1m</button>
+                    <button class="btn" value="YTD" id="YTD" type="button" onclick="toggleButton(this)">YTD</button>
+                    <button class="btn" value="1y"  id="1y"  type="button" onclick="toggleButton(this)">1y</button>
+                    <button class="btn" value="5y"  id="5y"  type="button" onclick="toggleButton(this)">5y</button>
+                    <button class="btn" value="20y" id="Max" type="button" onclick="toggleButton(this)">Max.</button>
+
+                    <input type="hidden" id="selecao" name="selecao">
+                </form>
+            </div>
+    </div>
+
+    <!-- pie Plot -->
+    <div id="myPlot" style="position: relative; align-items: center; height:50vh; width:49%">
+        <canvas id="myPieChart"></canvas>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                console.log("Script is running!");
+
+                // Get portfolio data from Flask
+                const portfolio = JSON.parse('{{ portfolio_json | safe }}');
+
+                console.log("Portfolio Data:", portfolio);
+
+                if (!portfolio || portfolio.length === 0) {
+                    console.log("No stocks in portfolio.");
+                    document.getElementById("myPieChart").outerHTML = "<p class='text-center'>No stocks in portfolio</p>";
+                    return;
+                }
+
+                // Extract stock symbols and total values
+                const labels = portfolio.map(stock => stock.symbol);
+                const values = portfolio.map(stock => stock.total);
+
+                console.log("Labels:", labels);
+                console.log("Values:", values);
+
+                const ctx = document.getElementById("myPieChart").getContext("2d");
+
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: [
+                                "rgba(255, 99, 132)",  // Red (40% opacity)
+                                "rgba(54, 162, 235)",  // Blue
+                                "rgba(255, 206, 86)",  // Yellow
+                                "rgba(75, 192, 192)",  // Teal
+                                "rgba(153, 102, 255)", // Purple
+                                "rgba(255, 159, 64)"   // Orange
+                            ],
+                            borderWidth: 1,
+                            borderColor: "rgb(75, 192, 192)"
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "right",
+                                labels: { color: "#ffffff" }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>
+
+
+<!-- Table -->
+<div style="width: 100%;">
+    <table class="table table-dark table-striped" style="width: 100%;">
+        <thead>
+            <tr>
+                <th class="text-start">Symbol</th>
+                <th class="text-end">Shares</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in portfolio %}
+            <tr>
+                <td class="text-start">{{stock.symbol}}</td>
+                <td class="text-end">{{stock.shares}}</td>
+                <td class="text-end">{{stock.price | usd}}</td>
+                <td class="text-end">{{stock.total | usd}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="3">Cash</td>
+                <td class="border-0 text-end">{{cash | usd}}</td>
+            </tr>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="3">TOTAL</td>
+                <td class="border-0 fw-bold text-end">{{(cash + stock_total) | usd}}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}
